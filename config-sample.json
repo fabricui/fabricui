@@ -1,0 +1,51 @@
+{
+    "endpoints": [
+        "users",
+        "cards",
+        "definitions"
+    ],
+    "users": {
+        "keys": [
+            {
+                "key": "fname",
+                "label": "First Name",
+                "type": "Text",
+                "validator": "name",
+                "creatable": true,
+                "editable": true
+            },
+            {
+                "key": "lname",
+                "label": "Last Name",
+                "type": "Text",
+                "validator": "name",
+                "creatable": true,
+                "editable": true
+            },
+            {
+                "key": "email",
+                "label": "Email",
+                "type": "Text",
+                "validator": "email",
+                "creatable": true,
+                "editable": false
+            },
+            {
+                "key": "photo",
+                "label": "Photo",
+                "type": "File",
+                "validator": "image",
+                "creatable": true,
+                "editable": false
+            },
+            {
+                "key": "card",
+                "label": "Card",
+                "type": "relation",
+                "target": "card",
+                "path": "cards/",
+                "identifier": "cardId"
+            }
+        ]
+    }
+}
