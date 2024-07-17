@@ -34,7 +34,7 @@ const DynamicForm: React.FC = () => {
     axios
       .get("http://localhost:3333/endpoints")
       .then((response) => setConfig(response.data))
-      .catch((error) => {});
+      .catch((error) => console.error("Failed to fetch configuration:", error));
   }, []);
 
   const handleInputChange = (key: string, value: any) => {
