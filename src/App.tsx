@@ -1,6 +1,5 @@
 import { Navbar, Dropdown, Button } from 'flowbite-react';
 import DynamicForm, { FabricEPConfig } from './DynamicForm';
-import { resolve } from 'path';
 
 const ListItems = [
   {

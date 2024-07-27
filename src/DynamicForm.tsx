@@ -1,12 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-enum RestMethods {
-  POST = 'POST',
-  GET = 'GET',
-  PUT = 'PUT',
-  PATCH = 'PATCH',
-  DELETE = 'DELETE',
-}
+type RestMethods = 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
 export interface FabricFieldConfig {
   key: string;
   label?: string;
@@ -43,6 +37,42 @@ export interface FabricProps {
   }) => Record<string, any>;
   fabricEPConfig: FabricEPConfig[];
 }
+
+const FabricEPComponent = ({
+  fabricEPConfig,
+  data,
+}: {
+  fabricEPConfig: FabricEPConfig[];
+  data: Record<string, any> | Record<string, any>[];
+}): React.ReactNode => {
+  return fabricEPConfig.map((endpoint) => {
+    if (Array.isArray(data)) {
+      return (
+        <>
+          {data.map((item, index) => (
+            <div key={index}>
+              {endpoint.fields.map((field, fieldIndex) => (
+                <div key={`${index}-${fieldIndex}`}>
+                  {field.label}:{item[field.key]}
+                </div>
+              ))}
+            </div>
+          ))}
+        </>
+      );
+    } else {
+      return (
+        <>
+          {endpoint.fields.map((field, fieldIndex) => (
+            <div key={fieldIndex}>
+              {field.label}:{data[0][field.key]}
+            </div>
+          ))}
+        </>
+      );
+    }
+  });
+};
 
 const Fabric = ({
   apiClient,
@@ -84,33 +114,7 @@ const Fabric = ({
   return (
     <div>
       <h1>Data</h1>
-      {fabricEPConfig.map((endpoint) => {
-        if (Array.isArray(data)) {
-          return (
-            <>
-              {data.map((item, index) => (
-                <div key={index}>
-                  {endpoint.fields.map((field, fieldIndex) => (
-                    <div key={`${index}-${fieldIndex}`}>
-                      {field.label}:{item[field.key]}
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </>
-          );
-        } else {
-          return (
-            <>
-              {endpoint.fields.map((field, fieldIndex) => (
-                <div key={fieldIndex}>
-                  {field.label}:{data[0][field.key]}
-                </div>
-              ))}
-            </>
-          );
-        }
-      })}
+      <FabricEPComponent fabricEPConfig={fabricEPConfig} data={data} />
     </div>
   );
 };
