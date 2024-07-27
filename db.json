@@ -1,55 +1,29 @@
 {
-    "endpoints": {
-      "users": {
-        "keys": [
-          {
-            "key": "fname",
-            "label": "First Name",
-            "type": "Text",
-            "validator": "name",
-            "creatable": true,
-            "editable": true
-          },
-          {
-            "key": "lname",
-            "label": "Last Name",
-            "type": "Text",
-            "validator": "name",
-            "creatable": true,
-            "editable": true
-          },
-          {
-            "key": "email",
-            "label": "Email",
-            "type": "Text",
-            "validator": "email",
-            "creatable": true,
-            "editable": false
-          },
-          {
-            "key": "photo",
-            "label": "Photo",
-            "type": "File",
-            "validator": "image",
-            "creatable": true,
-            "editable": false
-          },
-          {
-            "key": "card",
-            "label": "Card",
-            "type": "relation",
-            "target": "card",
-            "path": "cards/",
-            "identifier": "cardId"
-          }
-        ]
-      },
-      "cards": {
-        "keys": []
-      },
-      "definitions": {
-        "keys": []
-      }
+    "posts": [
+        {
+            "id": "1",
+            "title": "a title",
+            "views": 100
+        },
+        {
+            "id": "2",
+            "title": "another title",
+            "views": 200
+        }
+    ],
+    "comments": [
+        {
+            "id": "1",
+            "text": "a comment about post 1",
+            "postId": "1"
+        },
+        {
+            "id": "2",
+            "text": "another comment about post 1",
+            "postId": "1"
+        }
+    ],
+    "profile": {
+        "name": "typicode"
     }
-  }
-  
+}

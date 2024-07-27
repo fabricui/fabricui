@@ -1,112 +1,112 @@
-import axios from "axios";
-import { Button, FileInput, TextInput } from "flowbite-react";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from 'react';
 
-interface FieldConfig {
+type RestMethods = 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
+
+export interface FabricFieldConfig {
   key: string;
-  label: string;
-  type: string;
-  validator?: string;
-  creatable: boolean;
-  editable: boolean;
-  target?: string;
-  path?: string;
-  identifier?: string;
+  label?: string;
+  placeHolder?: string;
+  type: 'text' | 'file' | 'date' | 'number';
+  validator?: 'string' | ((value: any) => ValidatorResponse);
+  isNullable?: Boolean;
+  isPostable?: Boolean;
+  isPutable?: Boolean;
+  isPatchable?: Boolean;
+  shouldShowInListView?: Boolean;
+}
+export interface ValidatorResponse {
+  status: Boolean;
+  message?: string;
 }
 
-interface EndpointConfig {
-  users: {
-    keys: FieldConfig[];
-  };
-  cards: {
-    keys: FieldConfig[];
-  };
-  definitions: {
-    keys: FieldConfig[];
-  };
+export interface FabricEPConfig {
+  url: string;
+  methods: RestMethods[];
+  fields: FabricFieldConfig[];
+  key?: string;
+  primaryFocusTarget?: string;
+  validator: (FormData: Record<string, any>) => ValidatorResponse;
+  shouldShowInMenu?: Boolean;
+  type?: 'card' | 'table';
+  endpoints?: FabricEPConfig[];
+}
+export interface FabricProps {
+  apiClient: (params: {
+    method: string;
+    query?: Record<string, any>;
+    body?: Record<string, any>;
+  }) => Record<string, any>;
+  fabricEPConfig: FabricEPConfig[];
 }
 
-const DynamicForm: React.FC = () => {
-  const [config, setConfig] = useState<EndpointConfig | null>(null);
-  const [formData, setFormData] = useState<{ [key: string]: any }>({});
+const Fabric = ({
+  apiClient,
+  fabricEPConfig,
+}: FabricProps): React.ReactElement => {
+  const [data, setData] = useState<Record<string, any> | Record<string, any>[]>(
+    [],
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const result = await apiClient({
+        method: 'GET',
+      });
+      setData(result);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Some error';
+      setError(new Error(errorMessage));
+    } finally {
+      setLoading(false);
+    }
+  }, [apiClient]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3333/endpoints")
-      .then((response) => setConfig(response.data))
-      .catch((error) => console.error("Failed to fetch configuration:", error));
-  }, []);
+    fetchData();
+  }, [fetchData]);
 
-  const handleInputChange = (key: string, value: any) => {
-    setFormData({
-      ...formData,
-      [key]: value,
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
-  if (!config) {
+  if (loading) {
     return <div>Loading...</div>;
   }
 
-  const renderField = (field: FieldConfig) => {
-    switch (field.type) {
-      case "Text":
-        return (
-          <div key={field.key} className="mb-4">
-            <label
-              htmlFor={field.key}
-              className="block text-sm font-medium text-gray-700"
-            >
-              {field.label}
-            </label>
-            <TextInput
-              id={field.key}
-              name={field.key}
-              type="text"
-              className="mt-1 block w-full"
-              onChange={(e) => handleInputChange(field.key, e.target.value)}
-            />
-          </div>
-        );
-      case "File":
-        return (
-          <div key={field.key} className="mb-4">
-            <label
-              htmlFor={field.key}
-              className="block text-sm font-medium text-gray-700"
-            >
-              {field.label}
-            </label>
-            <FileInput
-              id={field.key}
-              name={field.key}
-              className="mt-1 block w-full"
-              onChange={(e) =>
-                handleInputChange(
-                  field.key,
-                  e.target.files ? e.target.files[0] : null
-                )
-              }
-            />
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
+  if (error) {
+    return <div>Error: {error.message ?? 'some error occured'}</div>;
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4">
-      {config.users.keys.map((field) => renderField(field))}
-      <Button type="submit" className="mt-4">
-        Submit
-      </Button>
-    </form>
+    <div>
+      <h1>Data</h1>
+      {fabricEPConfig.map((endpoint) => {
+        if (Array.isArray(data)) {
+          return (
+            <>
+              {data.map((item) => (
+                <>
+                  {endpoint.fields.map((field) => (
+                    <div>
+                      {field.label}:{item[field.key]}
+                    </div>
+                  ))}
+                </>
+              ))}
+            </>
+          );
+        } else {
+          return (
+            <>
+              {endpoint.fields.map((field) => (
+                <div>
+                  {field.label}:{data[0][field.key]}
+                </div>
+              ))}
+            </>
+          );
+        }
+      })}
+    </div>
   );
 };
-
-export default DynamicForm;
+export default Fabric;
