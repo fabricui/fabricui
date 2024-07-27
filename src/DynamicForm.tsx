@@ -20,7 +20,7 @@ export interface FabricFieldConfig {
   shouldShowInListView?: boolean;
 }
 export interface ValidatorResponse {
-  status: Boolean;
+  status: boolean;
   message?: string;
 }
 
@@ -89,13 +89,13 @@ const Fabric = ({
           return (
             <>
               {data.map((item, index) => (
-                <>
+                <div key={index}>
                   {endpoint.fields.map((field, fieldIndex) => (
                     <div key={`${index}-${fieldIndex}`}>
                       {field.label}:{item[field.key]}
                     </div>
                   ))}
-                </>
+                </div>
               ))}
             </>
           );
