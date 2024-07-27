@@ -1,18 +1,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-type RestMethods = 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
-
+enum RestMethods {
+  POST = 'POST',
+  GET = 'GET',
+  PUT = 'PUT',
+  PATCH = 'PATCH',
+  DELETE = 'DELETE',
+}
 export interface FabricFieldConfig {
   key: string;
   label?: string;
   placeHolder?: string;
   type: 'text' | 'file' | 'date' | 'number';
   validator?: 'string' | ((value: any) => ValidatorResponse);
-  isNullable?: Boolean;
-  isPostable?: Boolean;
-  isPutable?: Boolean;
-  isPatchable?: Boolean;
-  shouldShowInListView?: Boolean;
+  isNullable?: boolean;
+  isPostable?: boolean;
+  isPutable?: boolean;
+  isPatchable?: boolean;
+  shouldShowInListView?: boolean;
 }
 export interface ValidatorResponse {
   status: Boolean;
@@ -26,7 +31,7 @@ export interface FabricEPConfig {
   key?: string;
   primaryFocusTarget?: string;
   validator: (FormData: Record<string, any>) => ValidatorResponse;
-  shouldShowInMenu?: Boolean;
+  shouldShowInMenu?: boolean;
   type?: 'card' | 'table';
   endpoints?: FabricEPConfig[];
 }
@@ -83,10 +88,10 @@ const Fabric = ({
         if (Array.isArray(data)) {
           return (
             <>
-              {data.map((item) => (
+              {data.map((item, index) => (
                 <>
-                  {endpoint.fields.map((field) => (
-                    <div>
+                  {endpoint.fields.map((field, fieldIndex) => (
+                    <div key={`${index}-${fieldIndex}`}>
                       {field.label}:{item[field.key]}
                     </div>
                   ))}
@@ -97,8 +102,8 @@ const Fabric = ({
         } else {
           return (
             <>
-              {endpoint.fields.map((field) => (
-                <div>
+              {endpoint.fields.map((field, fieldIndex) => (
+                <div key={fieldIndex}>
                   {field.label}:{data[0][field.key]}
                 </div>
               ))}
